@@ -1,0 +1,10 @@
+{
+    "presents": [
+        [
+            "@babel/preset-env",
+            {
+                "useBuiltIns": "entry"
+            }
+        ]
+    ]
+}
