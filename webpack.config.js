@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const basePath = __dirname;
 
@@ -11,22 +12,44 @@ module.exports = (env, argv) => {
     return {
       context: path.join(basePath, 'src'),
       resolve: {
-        extensions: ['.js', '.ts'],
+        extensions: ['.js', '.ts', '.vue'],
+        alias: {
+          vue: 'vue/dist/vue.runtime.esm.js',
+        },
       },
       entry: {
         app: './main.ts',
+        vendor: ['vue'],
       },
       output: {
         path: path.join(basePath, 'dist'),
         filename: '[name].js',
       },
+      optimization: {
+        splitChunks: {
+          cacheGroups: {
+            vendor: {
+              test: /node_modules/,
+              name: 'vendor',
+              chunks: 'initial',
+              enforce: true
+            },
+          },
+        },
+      },
       module: {
         rules: [
+          {
+            test: /\.vue$/,
+            exclude: /node_modules/,
+            loader: 'vue-loader'
+          },
           {
             test: /\.ts$/,
             use: {
               loader: 'ts-loader',
               options: {
+                appendTsSuffixTo: [/\.vue$/],
                 // disable type checker - we will use it in fork plugin
                 transpileOnly: true,
               },
@@ -34,7 +57,7 @@ module.exports = (env, argv) => {
           },
           {
             test: /\.css$/,
-            use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            use: [isDev ? 'vue-style-loader' :MiniCssExtractPlugin.loader, 'css-loader'],
           },
           {
             test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
@@ -66,7 +89,9 @@ module.exports = (env, argv) => {
         }),
         new ForkTsCheckerWebpackPlugin({
           tsconfig: path.join(basePath, './tsconfig.json'),
+          vue: true
         }),
+        new VueLoaderPlugin(),
         isDev &&
           new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('development'),
