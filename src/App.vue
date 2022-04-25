@@ -1,7 +1,9 @@
 <template>
     <div>
+        <h1>{{message}}</h1>
         <hello-component
-        v-model="message"
+        :message="message"
+        :on-change="onChange"
     />
     </div>    
 </template>
@@ -10,16 +12,20 @@
 import Vue from 'vue';
 import HelloComponent from './Hello.vue';
 
-export default ({
+export default Vue.extend({
     name: 'App',
-    extends: Vue,
+    components: {
+        HelloComponent,
+    },
     data() {
         return {
             message: 'Hello from Aspp',
         };
     },
-    components: {
-        HelloComponent,
+    methods: {
+        onChange(event) {
+        this.message = event.target.value;
+        },
     },
 });
 </script>
