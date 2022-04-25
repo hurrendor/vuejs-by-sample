@@ -1,7 +1,7 @@
 <template>
     <div>
         <hello-component
-        :message="message"
+        v-model="message"
     />
     </div>    
 </template>
@@ -17,8 +17,6 @@ export default ({
         return {
             message: 'Hello from Aspp',
         };
-    },
-    methods: {
     },
     components: {
         HelloComponent,

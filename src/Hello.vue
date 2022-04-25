@@ -1,5 +1,8 @@
 <template>
-  <input v-model="message" />
+  <input 
+  :value="value" 
+  @input="onChange"
+  />
 </template>
 
 <script lang="ts">
@@ -8,7 +11,12 @@ import Vue from 'vue';
 export default Vue.extend({
   name: 'HelloComponent',
   props: {
-    message: String,
+    value: String,
+  },
+  methods: {
+      onChange(event) {
+          this.$emit('input', event.target.value);
+      },
   },
 });
 </script>
